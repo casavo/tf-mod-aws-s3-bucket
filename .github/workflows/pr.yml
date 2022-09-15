@@ -21,5 +21,4 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
       - name: Terraform format check
-        working-directory: terraform
         run: terraform fmt -check -recursive
