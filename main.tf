@@ -105,6 +105,10 @@ resource "aws_s3_bucket" "bucket" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = [server_side_encryption_configuration]
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "bucket" {
