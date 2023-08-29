@@ -1,7 +1,15 @@
 locals {
-  acl                 = var.public ? "public-read" : "private"
+  acl                 = "private"
   public_access_block = !var.public
   websites            = var.website_enabled ? [var.website_documents] : []
+
+  public_policies = var.public ? [{
+    actions = [
+      "s3:GetObject"
+    ]
+    resources  = ["/*"]
+    principals = ["*"]
+  }] : []
 
   policylist_bucket = [
     for element in var.bucket_policies : merge(
@@ -15,7 +23,8 @@ locals {
       }, element
     )
   ]
-  policylist_resources_struct = [
+
+  policylist_resources_struct = concat(local.public_policies, [
     for element in var.resource_policies : merge(
       {
         actions = [
@@ -28,7 +37,7 @@ locals {
       },
       element
     )
-  ]
+  ])
   policylist_resources = [
     for element in local.policylist_resources_struct : merge(
       element,
