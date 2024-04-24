@@ -1,6 +1,5 @@
 locals {
   public_access_block = !var.public
-  websites            = var.website_enabled ? [var.website_documents] : []
 
   public_policies = var.public ? [{
     actions = [
@@ -64,15 +63,6 @@ locals {
 resource "aws_s3_bucket" "bucket" {
   bucket        = var.name
   force_destroy = var.force_destroy
-
-  dynamic "website" {
-    for_each = local.websites
-
-    content {
-      error_document = website.value.error
-      index_document = website.value.index
-    }
-  }
 
   lifecycle {
     ignore_changes = [server_side_encryption_configuration]
@@ -180,3 +170,16 @@ resource "aws_s3_bucket_cors_configuration" "bucket_cors" {
   }
 }
 
+resource "aws_s3_bucket_website_configuration" "bucket_website" {
+  count = var.website_enabled ? 1 : 0
+
+  bucket = aws_s3_bucket.bucket.bucket
+
+  index_document {
+    suffix = var.website_documents.index
+  }
+
+  error_document {
+    key = var.website_documents.error
+  }
+}
