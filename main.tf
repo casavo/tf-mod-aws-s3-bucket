@@ -101,20 +101,21 @@ resource "aws_s3_bucket_public_access_block" "bucket" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
+  count  = length(local.lifecycle_policies) > 0 ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
 
   dynamic "rule" {
     for_each = local.lifecycle_policies
 
     content {
-      id     = lifecycle_rule.value.id
+      id     = rule.value.id
       status = "Enabled"
       filter {
-        prefix = lifecycle_rule.value.prefix
+        prefix = rule.value.prefix
       }
 
       dynamic "transition" {
-        for_each = lifecycle_rule.value.transitions
+        for_each = rule.value.transitions
 
         content {
           days          = transition.value.days
@@ -123,7 +124,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
       }
 
       dynamic "expiration" {
-        for_each = lifecycle_rule.value.expirations
+        for_each = rule.value.expirations
 
         content {
           days = expiration.value.days
