@@ -1,5 +1,4 @@
 locals {
-  acl                 = "private"
   public_access_block = !var.public
   websites            = var.website_enabled ? [var.website_documents] : []
 
@@ -99,11 +98,6 @@ resource "aws_s3_bucket_public_access_block" "bucket" {
   block_public_policy     = local.public_access_block
   ignore_public_acls      = local.public_access_block
   restrict_public_buckets = local.public_access_block
-}
-
-resource "aws_s3_bucket_acl" "bucket" {
-  bucket = aws_s3_bucket.bucket.id
-  acl    = local.acl
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
