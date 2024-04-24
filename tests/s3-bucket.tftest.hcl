@@ -1,4 +1,4 @@
-run "create_bucket" {
+run "simple_bucket" {
     command = apply
 
     variables {
@@ -19,9 +19,19 @@ run "create_bucket" {
         condition = length(aws_s3_bucket_website_configuration.bucket_website) == 0
         error_message = "by default no website configuration should be created"
     }
+
+    assert {
+        error_message = "by default force destroy should be true"
+        condition = aws_s3_bucket.bucket.force_destroy == true
+    }
+
+    assert {
+        error_message = "by default no bucket policy should be created"
+        condition = length(aws_s3_bucket_policy.bucket_policy) == 0
+    }
 }
 
-run "with_cors" {
+run "bucket_with_cors" {
     command = apply
 
     variables {
