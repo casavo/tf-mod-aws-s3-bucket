@@ -64,7 +64,6 @@ locals {
 
 resource "aws_s3_bucket" "bucket" {
   bucket        = var.name
-  acl           = local.acl
   force_destroy = var.force_destroy
 
   dynamic "website" {
@@ -88,13 +87,37 @@ resource "aws_s3_bucket" "bucket" {
     }
   }
 
-  dynamic "lifecycle_rule" {
+  lifecycle {
+    ignore_changes = [server_side_encryption_configuration]
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+
+  block_public_acls       = local.public_access_block
+  block_public_policy     = local.public_access_block
+  ignore_public_acls      = local.public_access_block
+  restrict_public_buckets = local.public_access_block
+}
+
+resource "aws_s3_bucket_acl" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+  acl    = local.acl
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+
+  dynamic "rule" {
     for_each = local.lifecycle_policies
 
     content {
-      id      = lifecycle_rule.value.id
-      enabled = true
-      prefix  = lifecycle_rule.value.prefix
+      id     = lifecycle_rule.value.id
+      status = "Enabled"
+      filter {
+        prefix = lifecycle_rule.value.prefix
+      }
 
       dynamic "transition" {
         for_each = lifecycle_rule.value.transitions
@@ -115,18 +138,6 @@ resource "aws_s3_bucket" "bucket" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [server_side_encryption_configuration]
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "bucket" {
-  bucket = aws_s3_bucket.bucket.id
-
-  block_public_acls       = local.public_access_block
-  block_public_policy     = local.public_access_block
-  ignore_public_acls      = local.public_access_block
-  restrict_public_buckets = local.public_access_block
 }
 
 data "aws_iam_policy_document" "bucket_policy" {
