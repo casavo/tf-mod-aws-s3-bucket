@@ -9,7 +9,7 @@ variable "public" {
 
 variable "force_destroy" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "website_enabled" {
