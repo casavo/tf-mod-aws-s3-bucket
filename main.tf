@@ -1,3 +1,7 @@
+/*
+ * Creates s3 bucket with public access block, bucket policies, lifecycle policies, encryption, cors rules and website configuration
+ */
+
 locals {
   public_access_block = !var.public
 

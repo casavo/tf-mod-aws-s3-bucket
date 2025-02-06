@@ -1,0 +1,16 @@
+formatter: "markdown"
+
+header-from: main.tf
+
+sections:
+  hide:
+    - modules
+    - resources
+    - providers
+
+output:
+  file: README.md
+  mode: "overwrite"
+
+settings:
+  hide-empty: true
