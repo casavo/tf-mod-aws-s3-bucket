@@ -1,4 +1,4 @@
 output "aws_s3_bucket_arn" {
-    value = aws_s3_bucket.this.arn
+    value = aws_s3_bucket.bucket.arn
     description = "The ARN of the S3 bucket."
 }
