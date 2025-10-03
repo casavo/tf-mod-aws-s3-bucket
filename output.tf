@@ -8,7 +8,7 @@ output "name" {
     description = "The name of the S3 bucket."
 }
 
-output "bucket_domain_name" {
-    value = aws_s3_bucket.bucket.bucket_domain_name
-    description = "The domain name of the S3 bucket."
+output "bucket" {
+    value = aws_s3_bucket.bucket
+    description = "The S3 bucket resource."
 }
